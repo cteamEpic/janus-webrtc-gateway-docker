@@ -1,8 +1,8 @@
 FROM buildpack-deps:stretch
 
-RUN sed -i 's/archive.ubuntu.com/mirror.aarnet.edu.au\/pub\/ubuntu\/archive/g' /etc/apt/sources.list
+# RUN sed -i 's/archive.ubuntu.com/mirror.aarnet.edu.au\/pub\/ubuntu\/archive/g' /etc/apt/sources.list
 
-RUN rm -rf /var/lib/apt/lists/*
+# RUN rm -rf /var/lib/apt/lists/*
 RUN apt-get -y update && apt-get install -y \
     libjansson-dev \
     libnice-dev \
@@ -151,7 +151,7 @@ RUN FFMPEG_VER="n4.2.1" && cd ~/ffmpeg_sources && \
 # nginx-rtmp with openresty
 RUN ZLIB="zlib-1.2.11" && vNGRTMP="v1.1.11" && PCRE="8.41" && nginx_build=/root/nginx && mkdir $nginx_build && \
     cd $nginx_build && \
-    wget https://ftp.pcre.org/pub/pcre/pcre-$PCRE.tar.gz && \
+    wget https://ftp.exim.org/pub/pcre/pcre-$PCRE.tar.gz && \
     tar -zxf pcre-$PCRE.tar.gz && \
     cd pcre-$PCRE && \
     ./configure && make && make install && \
@@ -294,7 +294,7 @@ RUN make && make install
 
 
 RUN cd / && git clone https://github.com/meetecho/janus-gateway.git && cd /janus-gateway && \
-    git checkout refs/tags/v0.10.9 && \
+    git checkout refs/tags/v0.10.10 && \
     sh autogen.sh &&  \
     PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
     --enable-post-processing \
@@ -317,8 +317,6 @@ RUN cd / && git clone https://github.com/meetecho/janus-gateway.git && cd /janus
     --enable-all-handlers && \
     make && make install && make configs && ldconfig
 
-COPY nginx.conf /usr/local/nginx/nginx.conf
-
 
 ENV NVM_VERSION v0.35.3
 ENV NODE_VERSION v12.18.3
@@ -339,9 +337,14 @@ SHELL ["/bin/bash", "-l", "-euxo", "pipefail", "-c"]
 RUN node -v
 RUN npm -v
 
+COPY nginx.conf /usr/local/nginx/nginx.conf
+RUN mkdir -p /etc/ssl/
+COPY selfx509/cert.cer /etc/ssl/
+COPY selfx509/key.key /etc/ssl/
 
-
-CMD nginx && janus
+# enable 8443 https server
+COPY janus.transport.http.jcfg /usr/local/etc/janus/janus.transport.http.jcfg
+CMD bash -c "nginx && janus"
 
 # RUN apt-get -y install iperf iperf3
 # RUN git clone https://github.com/HewlettPackard/netperf.git && \

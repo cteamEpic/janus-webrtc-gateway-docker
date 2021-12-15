@@ -1,0 +1,20 @@
+version: '2.1'
+services:
+
+  #
+  # janus-gateway
+  #
+  janus-gateway:
+    build: .
+    ports:
+      - "8188:8188"
+      - "8088:8088"
+      - "8089:8089"
+      - "7088:7088" # http /admin
+      - "8080:80"
+      - "8443:443"
+        # command: bash -c "nginx && janus;"
+        #    volumes:
+        #  - "./etc/janus/janus.jcfg:/usr/local/etc/janus/janus.jcfg"
+        #  - "./etc/janus/janus.eventhandler.sampleevh.jcfg:/usr/local/etc/janus/janus.eventhandler.sampleevh.jcfg"
+    restart: always
