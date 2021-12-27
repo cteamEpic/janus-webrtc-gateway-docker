@@ -339,8 +339,8 @@ RUN npm -v
 
 COPY nginx.conf /usr/local/nginx/nginx.conf
 RUN mkdir -p /etc/ssl/
-COPY selfx509/cert.cer /etc/ssl/
-COPY selfx509/key.key /etc/ssl/
+WORKDIR /etc/ssl/
+RUN openssl req -nodes -x509 -newkey rsa:4096 -keyout key.key -out cert.cer -sha256 -days 3650 -subj "/C=CA/ST=Null/L=Null/O=Null/CN=localhost"
 
 # enable 8443 https server
 COPY janus.transport.http.jcfg /usr/local/etc/janus/janus.transport.http.jcfg
