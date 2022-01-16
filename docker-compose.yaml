@@ -18,3 +18,9 @@ services:
         #  - "./etc/janus/janus.jcfg:/usr/local/etc/janus/janus.jcfg"
         #  - "./etc/janus/janus.eventhandler.sampleevh.jcfg:/usr/local/etc/janus/janus.eventhandler.sampleevh.jcfg"
     restart: always
+
+
+# iptables -A INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+# iptables -A OUTPUT -m conntrack --ctstate ESTABLISHED -j ACCEPT
+# iptables -A INPUT -p tcp -m multiport --dports 80,443,8188,8088,8089,8080,8443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+# iptables -A OUTPUT -p tcp -m multiport --dports 80,443,8188,8088,8089,8080,8443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
